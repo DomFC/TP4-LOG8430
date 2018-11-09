@@ -32,7 +32,8 @@ def home():
 
 class InvoiceAPI(Resource):
 
-    # Get the invoice ID
+    # Get the invoice at invoice_id
+    # TODO: Return the actual invoice
     # TODO: return error when invoice ID not found
     def get(self, invoice_id):
         print(invoice_id)
