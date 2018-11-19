@@ -1,31 +1,26 @@
-class Item:
-    def __init__(self, name="undefined", unit_price=0, quantity=0):
-        self.name = name
-        self.unit_price = unit_price
-        self.quantity = quantity
-
-    def print(self):
-        print("name: ", self.name, "\tunit_price: ", self.unit_price, "\tquantity: ", self.quantity)
+from bson import ObjectId
 
 
-class Invoice:
+class InvoiceService():
+    def __init__(self, database):
+        self.database = database
+    
+    # Returns the invoice associated to the specified id if it exists.
+    def get_invoice(self, invoice_id):
+        invoice = self.database.find_one({"_id": ObjectId(invoice_id)})
+        if invoice is not None:
+            invoice["_id"] = str(invoice["_id"])
+        return invoice
 
-    # Expected data format is in request_format.json
-    def __init__(self, data):
-        data_items = data["invoice"]["items"]
-        self.items = list()
-        [self.items.append(Item(item["name"], item["unit_price"], item["quantity"])) for item in data_items]
-        self.print()
+    # Inserts the invoice in the mongo database and returns the generated id.
+    def insert_invoice(self, invoice_dto):
+        result = self.database.insert_one(invoice_dto)
+        return {"_id": str(result.inserted_id)}
 
-    def add_item(self, item):
-        self.items.append(item)
+    def update_invoice(self, invoice_id, invoice_dto):
+        result = self.database.update_one({"_id": ObjectId(invoice_id)}, { "$set": invoice_dto})
+        return {"modified_count": result.modified_count}
 
-    def remove_item(self, item):
-        self.items.remove(item)
-
-    def get_items(self):
-        return self.items
-
-    def print(self):
-        print("Invoice:")
-        [item.print() for item in self.items]
+    def delete_invoice(self, invoice_id):
+        result = self.database.delete_one({"_id": ObjectId(invoice_id)})
+        return {"deleted_count": result.deleted_count}

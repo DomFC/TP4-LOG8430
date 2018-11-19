@@ -1,57 +1,52 @@
 # inspiration
 #https://gist.github.com/leon-sleepinglion/97bfd34132394e23ca5905ec730f776a
 # install python3
-# pip install flask, flast_restful, pyspark and numpy using pip3
+# pip install flask, flast_restful, pyspark, numpy and pymongo using pip3
 from flask import (
     Flask,
+    abort,
     request,
     render_template
 )
 from flask_restful import (Api, Resource, reqparse)
-from Invoice import Invoice, Item
-import json
+from Invoice import InvoiceService
+from mongo import CustomMongoClient
+
+# Create the mongo client
+mongo_client = CustomMongoClient("mongodb://localhost:27017", "log8430-tp4")
+invoice_service = InvoiceService(mongo_client.getCollection("invoices"))
 
 # Create the application instance
 app = Flask(__name__, template_folder="templates")
 api = Api(app)
-
-invoices = list()
-
 
 # Create a URL route in our application for "/"
 @app.route('/')
 def home():
     return render_template('home.html')
 
-
 class InvoiceAPI(Resource):
 
-    # Get the invoice at invoice_id
-    # TODO: Return the actual invoice
-    # TODO: return error when invoice ID not found
+    # Get an invoice
     def get(self, invoice_id):
-        print(invoice_id)
-        return "Invoice ID, " + invoice_id
+        invoice = invoice_service.get_invoice(invoice_id)
+        if invoice is None:
+            abort(404)
+        return invoice
 
-    # Add a new item in an invoice
-    # TODO: If invoice ID not found create a new invoice
-    # TODO: If item is already present add to quantity?
+    # Create a new invoice
     def post(self):
         data = request.get_json(force=True)
-        inv = Invoice(data)
-        # inv.add_item(Item(name=name, unit_price=unit_price, quantity=quantity))
-        # invoices.append(inv)
-        return 200
+        return invoice_service.insert_invoice(data)
 
-    # Replaces an invoice with an other
-    # TODO: everything
+    # Update an existing invoice
     def put(self, invoice_id):
-        return 200
+        data = request.get_json(force=True)
+        return invoice_service.update_invoice(invoice_id, data)
 
-    # Removes an invoice from the DB
-    # TODO: everything
+    # Remove an invoice
     def delete(self, invoice_id):
-        return 200
+        return invoice_service.delete_invoice(invoice_id)
 
 api.add_resource(InvoiceAPI, '/invoice/<string:invoice_id>', '/invoice')
 
