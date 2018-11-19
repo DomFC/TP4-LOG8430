@@ -43,18 +43,16 @@ class InvoiceAPI(Resource):
     # Add a new item in an invoice
     # TODO: If invoice ID not found create a new invoice
     # TODO: If item is already present add to quantity?
-    def post(self, invoice_id):
+    def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument("name")
-        parser.add_argument("quantity")
-        parser.add_argument("unit_price")
-        args = parser.parse_args()
-        name = args["name"]
-        quantity = int(args["quantity"])
+        parser.add_argument("invoice")
+        args = parser.parse_argns()
+        print(args)
+       """  quantity = int(args["quantity"])
         unit_price = float(args["unit_price"])
         inv = Invoice()
         inv.add_item(Item(name=name, unit_price=unit_price, quantity=quantity))
-        invoices.append(inv)
+        invoices.append(inv) """
         return 200
 
     # Replaces an invoice with an other
@@ -67,8 +65,7 @@ class InvoiceAPI(Resource):
     def delete(self, invoice_id):
         return 200
 
-
-api.add_resource(InvoiceAPI, "/invoice/<string:invoice_id>")
+api.add_resource(InvoiceAPI, '/invoice/<string:invoice_id>', '/invoice')
 
 # If we're running in stand alone mode, run the application
 if __name__ == '__main__':

@@ -1,13 +1,11 @@
 {
-    "invoices": [
-        {
-            "items": [
-                {
-                    "name":"Patate",
-                    "price":1.1,
-                    "quantity":2
-                }
-            ]
-        }
-    ]
+    "invoice": {
+        "items": [
+            {
+                "name":"Patate",
+                "unit_price":1.1,
+                "quantity":2
+            }
+        ]
+    }
 }
