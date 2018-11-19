@@ -1,6 +1,7 @@
 # inspiration
 #https://gist.github.com/leon-sleepinglion/97bfd34132394e23ca5905ec730f776a
-
+# install python3
+# pip install flask, flast_restful, pyspark and numpy using pip3
 from flask import (
     Flask,
     render_template
