@@ -4,6 +4,7 @@
 # pip install flask, flast_restful, pyspark and numpy using pip3
 from flask import (
     Flask,
+    request,
     render_template
 )
 from flask_restful import (Api, Resource, reqparse)
@@ -15,14 +16,6 @@ app = Flask(__name__, template_folder="templates")
 api = Api(app)
 
 invoices = list()
-invoice = Invoice()
-invoice.add_item(Item("pepe", unit_price=6.10, quantity=1))
-invoices.append(invoice)
-
-
-class Payload(object):
-    def __init__(self, j):
-        self.__dict__ = json.loads(j)
 
 
 # Create a URL route in our application for "/"
@@ -44,15 +37,10 @@ class InvoiceAPI(Resource):
     # TODO: If invoice ID not found create a new invoice
     # TODO: If item is already present add to quantity?
     def post(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument("invoice")
-        args = parser.parse_argns()
-        print(args)
-       """  quantity = int(args["quantity"])
-        unit_price = float(args["unit_price"])
-        inv = Invoice()
-        inv.add_item(Item(name=name, unit_price=unit_price, quantity=quantity))
-        invoices.append(inv) """
+        data = request.get_json(force=True)
+        inv = Invoice(data)
+        # inv.add_item(Item(name=name, unit_price=unit_price, quantity=quantity))
+        # invoices.append(inv)
         return 200
 
     # Replaces an invoice with an other
