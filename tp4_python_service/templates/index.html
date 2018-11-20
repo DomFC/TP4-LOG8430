@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Client Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+    jQuery.each(["put", "delete"], function(i, method) {
+        jQuery[method] = function(url, data, callback, type) {
+            if (jQuery.isFunction(data)) {
+                type = type || callback;
+                callback = data;
+                data = undefined;
+            }
+        
+            return jQuery.ajax({
+                url: url,
+                type: method,
+                dataType: type,
+                data: data,
+                success: callback
+            });
+        };
+    });
+
+    $(document).ready(function() {
+        $("#getInvoiceButton").click(function() {
+            const invoice_id = $("#getInvoiceInput").val();
+            $.get("http://127.0.0.1:5000/invoice/" + invoice_id, function(data, status) {
+                if (status === "success") {
+                    $("#getInvoiceResponse").val(JSON.stringify(data, null, 4));
+                } else {
+                    alert("Failed to get invoice: " + status);
+                }
+            });
+        });
+
+        $("#postInvoiceButton").click(function() {
+            const invoice_dto = $("#postInvoiceInput").val();
+            $.post("http://127.0.0.1:5000/invoice", invoice_dto, function(data, status) {
+                if (status === "success") {
+                    $("#postInvoiceResponse").val(JSON.stringify(data, null, 4));
+                } else {
+                    alert("Failed to post invoice: " + status);
+                }
+            });
+        });
+
+        $("#putInvoiceButton").click(function() {
+            const invoice_id = $("#putInvoiceIdInput").val();
+            const invoice_dto = $("#putInvoiceJSONInput").val();
+            $.put("http://127.0.0.1:5000/invoice/" + invoice_id, invoice_dto, function(data, status) {
+                if (status === "success") {
+                    $("#putInvoiceResponse").val(JSON.stringify(data, null, 4));
+                } else {
+                    alert("Failed to put invoice: " + status);
+                }
+            });
+        });
+
+        $("#deleteInvoiceButton").click(function() {
+            const invoice_id = $("#deleteInvoiceInput").val();
+            $.delete("http://127.0.0.1:5000/invoice/" + invoice_id, function(data, status) {
+                if (status === "success") {
+                    $("#deleteInvoiceResponse").val(JSON.stringify(data, null, 4));
+                } else {
+                    alert("Failed to delete invoice: " + status);
+                }
+            });
+        });
+    });
+    </script>
+
+    <style>
+    .response {
+        width: 100%;
+        resize: vertical;
+    }
+
+    .mt-2 {
+        margin-top: 8px;
+    }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1>Client to test InvoiceRestAPI</h1>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+
+            <!-- Get form -->
+            <div class="row form-group">
+                <h3>Get Invoice</h3>
+                <div>
+                    <input id="getInvoiceInput" type="text" placeholder="invoice id" class="form-control">
+                    <button id="getInvoiceButton" class="btn btn-primary btn-md mt-2">Get</button>
+                </div>
+                <h4>Response</h4>
+                <div>
+                    <textarea id="getInvoiceResponse" disabled="true" rows="10" class="response"></textarea>
+                </div>
+            </div>
+            <hr>
+
+            <!-- Post form -->
+            <div class="row form-group">
+                <h3>Post invoice</h3>
+                <h6>Enter a valid json invoice</h6>
+                <div>
+                    <textarea id="postInvoiceInput" rows="10" class="form-control"></textarea>
+                    <button id="postInvoiceButton" class="btn btn-primary btn-md mt-2">Post</button>
+                </div>
+                <h4>Response</h4>
+                <div>
+                    <textarea id="postInvoiceResponse" disabled="true" rows="10" class="response"></textarea>
+                </div>
+            </div>
+            <hr>
+
+            <!-- Put form -->
+            <div class="row form-group">
+                <h3>Put invoice</h3>
+                <h6>Enter a valid json invoice</h6>
+                <div>
+                    <input id="putInvoiceIdInput" type="text" placeholder="invoice id" class="form-control">
+                    <textarea id="putInvoiceJSONInput" rows="10" class="form-control"></textarea>
+                    <button id="putInvoiceButton" class="btn btn-primary btn-md mt-2">Put</button>
+                </div>
+                <h4>Response</h4>
+                <div>
+                    <textarea id="putInvoiceResponse" disabled="true" rows="10" class="response"></textarea>
+                </div>
+            </div>
+            <hr>
+
+            <!-- Delete form -->
+            <div class="row form-group">
+                <h3>Delete invoice</h3>
+                <div>
+                    <input id="deleteInvoiceInput" type="text" placeholder="invoice id" class="form-control">
+                    <button id="deleteInvoiceButton" class="btn btn-primary btn-md mt-2">Delete</button>
+                </div>
+                <h4>Response</h4>
+                <div>
+                    <textarea id="deleteInvoiceResponse" disabled="true" rows="10" class="response"></textarea>
+                </div>
+            </div>
+            <hr>
+        </div>
+    </div>
+</div>
+</body>
+</html>
