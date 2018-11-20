@@ -1,7 +1,7 @@
 # inspiration
 #https://gist.github.com/leon-sleepinglion/97bfd34132394e23ca5905ec730f776a
 # install python3
-# pip install flask, flast_restful, pyspark, numpy and pymongo using pip3
+# pip install flask, flask_restful, flask_cors, pyspark, numpy and pymongo using pip3
 from flask import (
     Flask,
     abort,
@@ -9,6 +9,7 @@ from flask import (
     render_template
 )
 from flask_restful import (Api, Resource, reqparse)
+from flask_cors import CORS
 from Invoice import InvoiceService
 from mongo import CustomMongoClient
 
@@ -18,12 +19,14 @@ invoice_service = InvoiceService(mongo_client.getCollection("invoices"))
 
 # Create the application instance
 app = Flask(__name__, template_folder="templates")
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 api = Api(app)
+
 
 # Create a URL route in our application for "/"
 @app.route('/')
 def home():
-    return render_template('home.html')
+    return render_template('index.html')
 
 class InvoiceAPI(Resource):
 
