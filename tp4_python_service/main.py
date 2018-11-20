@@ -1,5 +1,3 @@
-# inspiration
-#https://gist.github.com/leon-sleepinglion/97bfd34132394e23ca5905ec730f776a
 # install python3
 # pip install flask, flask_restful, flask_cors, pyspark, numpy and pymongo using pip3
 from flask import (
@@ -18,7 +16,7 @@ mongo_client = CustomMongoClient("mongodb://localhost:27017", "log8430-tp4")
 invoice_service = InvoiceService(mongo_client.getCollection("invoices"))
 
 # Create the application instance
-app = Flask(__name__, template_folder="templates")
+app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 api = Api(app)
 
