@@ -5,6 +5,12 @@ class InvoiceService():
     def __init__(self, database):
         self.database = database
     
+    # Returns all invoices in database as array.
+    # Object form is {'invoice': {'item': [{'unit_price': float, 'name': string, 'quantity': integer}]}, '_id': ObjectId}
+    def get_all_invoices(self):
+        invoices = self.database.find({})
+        return invoices
+
     # Returns the invoice associated to the specified id if it exists.
     def get_invoice(self, invoice_id):
         invoice = self.database.find_one({"_id": ObjectId(invoice_id)})

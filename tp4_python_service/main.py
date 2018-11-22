@@ -10,6 +10,8 @@ from flask_restful import (Api, Resource, reqparse)
 from flask_cors import CORS
 from Invoice import InvoiceService
 from mongo import CustomMongoClient
+from pyspark.sql import SparkSession
+from spark_utils import getFrequentData
 
 # Create the mongo client
 mongo_client = CustomMongoClient("mongodb://localhost:27017", "log8430-tp4")
@@ -26,42 +28,66 @@ api = Api(app)
 def home():
     return render_template('index.html')
 
+@app.route('/invoice/item/test')
+def test():
+    getFrequentData("data.txt")
+    return ""
 
-def is_valid_data(data):
-    if 'invoice' in data:
-        if 'items' in data['invoice']:
-            for item in data['invoice']['items']:
-                if 'name' not in item:
-                    return False
-                if 'unit_price' not in item:
-                    return False
-                if 'quantity' not in item:
-                    return False
-            return True
-        return False
-    return False
+@app.route('/invoice/item/frequency')
+def getInvoiceItemFrequency():
+    invoices = invoice_service.get_all_invoices()
+    output = ""
+    for element in invoices:
+        invoice = element["invoice"]
+        for item in invoice["items"]:
+            name = item["name"]
+            quantity = item["quantity"]
+            for i in range(0, quantity):
+                output += name + "\n"
+    file = open("data.txt", "w")
+    file.write(output)
+    file.flush()
 
+    result = str({"result": getFrequentData("data.txt")})
+    print(result)
+    return result
+    
 
 class InvoiceAPI(Resource):
+    @staticmethod
+    def isValidInvoice(data):
+        if 'invoice' in data:
+            if 'items' in data['invoice']:
+                for item in data['invoice']['items']:
+                    if 'name' not in item:
+                        return False
+                    if 'unit_price' not in item:
+                        return False
+                    if 'quantity' not in item:
+                        return False
+                return True
+            return False
+        return False
 
     # Get an invoice
     def get(self, invoice_id):
         invoice = invoice_service.get_invoice(invoice_id)
         if invoice is None:
             abort(404)
+        print(invoice)
         return invoice
 
     # Create a new invoice
     def post(self):
         data = request.get_json(force=True)
-        if is_valid_data(data):
+        if InvoiceAPI.isValidInvoice(data):
             return invoice_service.insert_invoice(data)
         abort(400)
 
     # Update an existing invoice
     def put(self, invoice_id):
         data = request.get_json(force=True)
-        if is_valid_data(data):
+        if InvoiceAPI.isValidInvoice(data):
             return invoice_service.update_invoice(invoice_id, data)
         abort(400)
 
