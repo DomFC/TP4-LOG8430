@@ -55,7 +55,7 @@ class InvoiceAPI(Resource):
     def post(self):
         data = request.get_json(force=True)
         if is_valid_data(data):
-            invoice_service.insert_invoice(data)
+            return invoice_service.insert_invoice(data)
         abort(400)
 
     # Update an existing invoice
