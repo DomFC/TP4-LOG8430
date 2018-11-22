@@ -73,6 +73,17 @@
                 }
             });
         });
+
+        $("#itemFrequencyButton").click(function() {
+            $.get("http://127.0.0.1:5000/invoice/item/frequency", function(data, status) {
+                if (status === "success") {
+                    const obj = JSON.parse(data.replace(/'/g, '"'));
+                    $("#itemFrequencyResponse").val(JSON.stringify(obj, null, 4));
+                } else {
+                    alert("Failed to get invoice item frequency: " + status);
+                }
+            })
+        })
     });
     </script>
 
@@ -151,6 +162,19 @@
                 <h4>Response</h4>
                 <div>
                     <textarea id="deleteInvoiceResponse" disabled="true" rows="10" class="response"></textarea>
+                </div>
+            </div>
+
+            <!-- Get frequency form -->
+            <div class="row form-group">
+                <h3>Get Most Frequent Items</h3>
+                <h6>May take more time than other requests</h6>
+                <div>
+                    <button id="itemFrequencyButton" class="btn btn-primary btn-md mt-2">Get</button>
+                </div>
+                <h4>Response</h4>
+                <div>
+                    <textarea id="itemFrequencyResponse" disabled="true" rows="10" class="response"></textarea>
                 </div>
             </div>
             <hr>

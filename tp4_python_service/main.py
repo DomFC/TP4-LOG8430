@@ -48,7 +48,7 @@ def getInvoiceItemFrequency():
     file.write(output)
     file.flush()
 
-    result = str({"result": getFrequentData("data.txt")})
+    result = str({"frequency": getFrequentData("data.txt")})
     print(result)
     return result
     
