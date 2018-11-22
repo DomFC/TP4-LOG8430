@@ -1,5 +1,3 @@
-# export PYSPARK_PYTHON=/usr/bin/python3.5
-
 from pyspark.mllib.fpm import FPGrowth
 from pyspark import SparkContext
 

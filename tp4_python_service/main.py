@@ -1,5 +1,7 @@
-# install python3
-# pip install flask, flask_restful, flask_cors, pyspark, numpy and pymongo using pip3
+# To run this project, first install python3, apache spark and pip.
+# Then using pip, install the following packages: flask, flask_restful, flask_cors, pyspark, numpy and pymongo
+# Finally, make sure the environment variable is correct export PYSPARK_PYTHON=/usr/bin/python3.5 or 'which python3.5'
+
 from flask import (
     Flask,
     abort,
