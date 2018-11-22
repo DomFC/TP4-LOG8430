@@ -48,7 +48,7 @@
                 } else {
                     alert("Failed to post invoice: " + status);
                 }
-            });
+            }).fail(function() { alert( "bad request" ); });
         });
 
         $("#putInvoiceButton").click(function() {
@@ -60,7 +60,7 @@
                 } else {
                     alert("Failed to put invoice: " + status);
                 }
-            });
+            }).fail(function() { alert( "bad request" ); });;
         });
 
         $("#deleteInvoiceButton").click(function() {

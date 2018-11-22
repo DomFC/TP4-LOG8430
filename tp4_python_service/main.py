@@ -26,6 +26,22 @@ api = Api(app)
 def home():
     return render_template('index.html')
 
+
+def is_valid_data(data):
+    if 'invoice' in data:
+        if 'items' in data['invoice']:
+            for item in data['invoice']['items']:
+                if 'name' not in item:
+                    return False
+                if 'unit_price' not in item:
+                    return False
+                if 'quantity' not in item:
+                    return False
+            return True
+        return False
+    return False
+
+
 class InvoiceAPI(Resource):
 
     # Get an invoice
@@ -38,12 +54,16 @@ class InvoiceAPI(Resource):
     # Create a new invoice
     def post(self):
         data = request.get_json(force=True)
-        return invoice_service.insert_invoice(data)
+        if is_valid_data(data):
+            invoice_service.insert_invoice(data)
+        abort(400)
 
     # Update an existing invoice
     def put(self, invoice_id):
         data = request.get_json(force=True)
-        return invoice_service.update_invoice(invoice_id, data)
+        if is_valid_data(data):
+            return invoice_service.update_invoice(invoice_id, data)
+        abort(400)
 
     # Remove an invoice
     def delete(self, invoice_id):
