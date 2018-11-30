@@ -13,7 +13,6 @@ from flask_cors import CORS
 from Invoice import InvoiceService
 from mongo import CustomMongoClient
 from pyspark.sql import SparkSession
-from spark_utils import getFrequentData
 
 # Create the mongo client
 mongo_client = CustomMongoClient("mongodb://localhost:27017", "log8430-tp4")
@@ -24,35 +23,39 @@ app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 api = Api(app)
 
+# Create the Spark connector
+invoice_spark = SparkSession.builder.appName("myInvoiceApp") \
+    .config("spark.mongodb.input.uri", "mongodb://127.0.0.1/log8430-tp4.invoices") \
+    .config("spark.mongodb.output.uri", "mongodb://127.0.0.1/log8430-tp4.invoices") \
+    .config("spark.jars.packages", "org.mongodb.spark:mongo-spark-connector_2.11:2.2.5") \
+    .getOrCreate()
 
 # Create a URL route in our application for "/"
 @app.route('/')
 def home():
     return render_template('index.html')
 
-@app.route('/invoice/item/test')
-def test():
-    getFrequentData("data.txt")
-    return ""
-
 @app.route('/invoice/item/frequency')
 def getInvoiceItemFrequency():
-    invoices = invoice_service.get_all_invoices()
-    output = ""
-    for element in invoices:
-        invoice = element["invoice"]
-        for item in invoice["items"]:
-            name = item["name"]
-            quantity = item["quantity"]
-            for i in range(0, quantity):
-                output += name + "\n"
-    file = open("data.txt", "w")
-    file.write(output)
-    file.flush()
-
-    result = str({"frequency": getFrequentData("data.txt")})
-    print(result)
-    return result
+    pipeline = """[
+                    { $sortByCount: "$invoice.items.name" },
+                    { $unwind: { path: "$_id"} },
+                    { $group:
+                        {
+                            _id: "$_id",
+                            total: {
+                                $sum: "$count"
+                            }
+                        }
+                    },
+                    { $sort: { total: -1} },
+                    { $limit: 3 }
+               ]"""
+    df = invoice_spark.read.format('com.mongodb.spark.sql.DefaultSource').option('pipeline', pipeline).load()
+    d = []
+    for row in df.rdd.map(lambda x: (x._id, x.total)).collect():
+        d.append({"name": row[0], "freq": row[1]})
+    return str(d)
     
 
 class InvoiceAPI(Resource):
