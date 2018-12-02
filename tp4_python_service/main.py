@@ -25,6 +25,7 @@ api = Api(app)
 
 # Create the Spark connector
 invoice_spark = SparkSession.builder.appName("myInvoiceApp") \
+    .master('spark://domfc-ThinkPad-13:7077') \
     .config("spark.mongodb.input.uri", "mongodb://127.0.0.1/log8430-tp4.invoices") \
     .config("spark.mongodb.output.uri", "mongodb://127.0.0.1/log8430-tp4.invoices") \
     .config("spark.jars.packages", "org.mongodb.spark:mongo-spark-connector_2.11:2.2.5") \
@@ -104,4 +105,4 @@ api.add_resource(InvoiceAPI, '/invoice/<string:invoice_id>', '/invoice')
 
 # If we're running in stand alone mode, run the application
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=False)
