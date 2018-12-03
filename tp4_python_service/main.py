@@ -2,6 +2,7 @@
 # Then using pip, install the following packages: flask, flask_restful, flask_cors, pyspark, numpy and pymongo
 # Finally, make sure the environment variable is correct export PYSPARK_PYTHON=/usr/bin/python3.5 or 'which python3.5'
 
+import os
 from flask import (
     Flask,
     abort,
@@ -25,7 +26,7 @@ api = Api(app)
 
 # Create the Spark connector
 invoice_spark = SparkSession.builder.appName("myInvoiceApp") \
-    .master('spark://domfc-ThinkPad-13:7077') \
+    .master('spark://' + os.uname()[1] + ':7077') \
     .config("spark.mongodb.input.uri", "mongodb://127.0.0.1/log8430-tp4.invoices") \
     .config("spark.mongodb.output.uri", "mongodb://127.0.0.1/log8430-tp4.invoices") \
     .config("spark.jars.packages", "org.mongodb.spark:mongo-spark-connector_2.11:2.2.5") \
